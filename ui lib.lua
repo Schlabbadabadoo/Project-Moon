@@ -101,13 +101,13 @@ local __ipairs = ipairs
 local __next = next
 pairs = function(t)
 	if type(t) ~= "table" then
-		return function() return nil end
+		return function() return nil end, nil, nil
 	end
 	return __pairs(t)
 end
 ipairs = function(t)
 	if type(t) ~= "table" then
-		return function() return nil end
+		return function() return nil end, nil, nil
 	end
 	return __ipairs(t)
 end
@@ -264,7 +264,7 @@ function Library:Unload()
 		setupvalue(UpValueFunc, Table[1], Table[2])
 		restorefunction(UpValueFunc)
 	end
-	for _, v in next, Library.HookedFunctions do
+	for _, v in safe_next(Library.HookedFunctions) do
 		if isfunctionhooked(v) then
 			restorefunction(v)
 		end
@@ -391,7 +391,7 @@ function Library:Notification(message, duration, color, position)
 			tweenserv:Create(Background, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				AnchorPoint = NewVector2(1, 0)
 			}):Play()
-			for _, v in next, notification.Objects do
+			for _, v in safe_next(notification.Objects) do
 				tweenserv:Create(v, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 					BackgroundTransparency = 1
 				}):Play()
@@ -606,8 +606,8 @@ end
 
 --
 function Library:ChangeAccent()
-	for _, Object in next, Library.ThemeObjects do
-		for Property, ColorIdx in next, Object.Properties do
+	for _, Object in safe_next(Library.ThemeObjects) do
+	for Property, ColorIdx in safe_next(Object.Properties) do
 			if type(ColorIdx) == 'string' then
 				if Object.Instance and Object.Instance:IsA("GuiObject") then
 					Library:TweenProperty(Object.Instance, Property, Library[ColorIdx], 0.2)
@@ -715,7 +715,7 @@ function Library:KeybindList()
 		local YSize = 0
 		local XSize = 0
 	
-		for _, Label in next, KeybindContainer:GetChildren() do
+	for _, Label in safe_next(KeybindContainer:GetChildren()) do
 			if Label:IsA('TextLabel') and Label.Visible then
 				YSize = YSize + 15;
 				if (Label.TextBounds.X > XSize) then
@@ -2429,7 +2429,7 @@ do
 						table.remove(chosen, table.find(chosen, option))
 						local textchosen = {}
 						local cutobject = false
-						for _, opt in next, chosen do
+						for _, opt in safe_next(chosen) do
 							table.insert(textchosen, opt)
 						end
 						Value.Text = #chosen == 0 and "" or table.concat(textchosen, ",") .. (cutobject and ", ..." or "")
@@ -2444,7 +2444,7 @@ do
 						table.insert(chosen, option)
 						local textchosen = {}
 						local cutobject = false
-						for _, opt in next, chosen do
+						for _, opt in safe_next(chosen) do
 							table.insert(textchosen, opt)
 						end
 						Value.Text = #chosen == 0 and "" or table.concat(textchosen, ",") .. (cutobject and ", ..." or "")
@@ -2458,7 +2458,7 @@ do
 						Value.Text = ""
 						Library:TweenProperty(text, "TextColor3", Color3.fromRGB(145, 145, 145), 0.2)
 					else
-						for _, tbl in next, Dropdown.OptionInsts do
+						for _, tbl in safe_next(Dropdown.OptionInsts) do
 							Library:TweenProperty(tbl.text, "TextColor3", Color3.fromRGB(145, 145, 145), 0.2)
 						end
 						chosen = option
@@ -2473,7 +2473,7 @@ do
 		end
 		--
 		local function createoptions(tbl)
-			for _, option in next, tbl do
+			for _, option in safe_next(tbl) do
 				Dropdown.OptionInsts[option] = {}
 				local NewOption = Library:Create('TextButton', {
 					Parent = ContainerInline,
@@ -2522,12 +2522,12 @@ do
 			if Dropdown.Max and Dropdown.Max > 1 then
 				table.clear(chosen)
 				option = type(option) == "table" and option or {}
-				for opt, tbl in next, Dropdown.OptionInsts do
+				for opt, tbl in safe_next(Dropdown.OptionInsts) do
 					if not table.find(option, opt) then
 						Library:TweenProperty(tbl.text, "TextColor3", Color3.fromRGB(145, 145, 145), 0.2)
 					end
 				end
-				for _, opt in next, option do
+				for _, opt in safe_next(option) do
 					if table.find(Dropdown.Options, opt) and #chosen < Dropdown.Max then
 						table.insert(chosen, opt)
 						Library:TweenProperty(Dropdown.OptionInsts[opt].text, "TextColor3", Color3.new(1, 1, 1), 0.2)
@@ -2535,7 +2535,7 @@ do
 				end
 				local textchosen = {}
 				local cutobject = false
-				for _, opt in next, chosen do
+				for _, opt in safe_next(chosen) do
 					table.insert(textchosen, opt)
 				end
 				Value.Text = #chosen == 0 and "" or table.concat(textchosen, ",") .. (cutobject and ", ..." or "")
@@ -2548,7 +2548,7 @@ do
 			if Dropdown.Max and Dropdown.Max > 1 then
 				set(option)
 			else
-				for opt, tbl in next, Dropdown.OptionInsts do
+				for opt, tbl in safe_next(Dropdown.OptionInsts) do
 					if opt ~= option then
 						Library:TweenProperty(tbl.text, "TextColor3", Color3.fromRGB(145, 145, 145), 0.2)
 					end
@@ -2574,7 +2574,7 @@ do
 		end
 		--
 		function Dropdown:Refresh(tbl)
-			for _, opt in next, Dropdown.OptionInsts do
+			for _, opt in safe_next(Dropdown.OptionInsts) do
 				coroutine.wrap(function()
 					opt.button:Destroy()
 				end)()
