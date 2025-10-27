@@ -221,7 +221,7 @@ function Library:SetUpValue(UpValueFunction, UpValueNumber, NewUpValue)
 end
 
 function Library:RestoreUpValue(UpValueFunction, UpValue)
-	for UpValueFunc, Table in Library.ChangedUpValues do
+	for UpValueFunc, Table in pairs(Library.ChangedUpValues) do
 		if UpValueFunc == UpValueFunction and Table[1] == UpValue then
 			setupvalue(UpValueFunction, Table[1], Table[2])
 			UpValueFunc = nil
@@ -240,7 +240,7 @@ function Library:Unload()
 	for _, v in ipairs(Library.Connections) do
 		v:Disconnect()
 	end
-	for UpValueFunc, Table in Library.ChangedUpValues do
+	for UpValueFunc, Table in pairs(Library.ChangedUpValues) do
 		setupvalue(UpValueFunc, Table[1], Table[2])
 		restorefunction(UpValueFunc)
 	end
