@@ -96,6 +96,26 @@ Library.__index = Library;
 Library.Pages.__index = Library.Pages;
 Library.Sections.__index = Library.Sections;
 
+local __pairs = pairs
+local __ipairs = ipairs
+local __next = next
+pairs = function(t)
+	if type(t) ~= "table" then
+		return function() return nil end
+	end
+	return __pairs(t)
+end
+ipairs = function(t)
+	if type(t) ~= "table" then
+		return function() return nil end
+	end
+	return __ipairs(t)
+end
+local function safe_next(tbl)
+	return __next, (type(tbl) == "table" and tbl) or {}
+end
+
+
 if not isfolder(Library.Folder) then
 	makefolder(Library.Folder)
 end
